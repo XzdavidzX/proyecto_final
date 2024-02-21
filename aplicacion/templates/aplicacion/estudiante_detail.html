@@ -1,0 +1,38 @@
+{% extends 'aplicacion/base.html' %} 
+{% load static %} 
+{% block titulo %}Estudiante{% endblock titulo %} 
+{% block cabecera %}Estudiante{% endblock cabecera %} 
+{% block contenido %}
+<table>
+    <tr>
+        <td><h2>Estudiante: {{object}}</h2></td>
+    </tr>
+</table>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Apellido</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr>
+      <td>{{ object.id }}</td>
+      <td>{{ object.nombre }}</td>
+      <td>{{ object.apellido }}</td>
+      <td>{{ object.email }}</td>
+    </tr>
+
+  </tbody>
+</table>
+<a
+href="{% url 'estudiantes' %}"
+class="btn btn-danger"
+style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"
+><i class="fa fa-share fa-sm" title="List Back">Volver</i>
+</a>
+{% endblock contenido %}

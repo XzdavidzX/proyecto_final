@@ -1,39 +1,48 @@
-{% extends 'aplicacion/base.html' %}
-{% load static %}
-
+{% extends 'aplicacion/home.html' %}
 
 {% block titulo %}
-    Cursos
+    <h1 class="display-5 fw-bolder text-white mb-2" >Cursos</h1>
 {% endblock titulo %}
-
-
-{% block cabecera %}
-    Listado de Cursos
-{% endblock cabecera %}
     
+
 {% block contenido %}
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Comision</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for curso in cursos %}
+
+<table>
     <tr>
-        <td>{{ curso.id }}</td>
-        <td>{{ curso.nombre }}</td>
-        <td>{{ curso.comision }}</td>
+        <td width="200"><h2>Cursos</h2></td>
+        <td>
+            <a
+            href="{% url 'cursoForm' %}"
+            ><button type="button" class="btn btn-outline-primary">+</button></a>
+        </td>
     </tr>
-    {% endfor %}
-    </tbody>
 </table>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre de Curso</th>
+                <th>Comision</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for c in cursos  %}
+            <tr>
+                <td>{{ c.id }}</td>
+                <td>{{ c.nombre }}</td>
+                <td>{{ c.comision }}</td>
+                <td>
+                    <a
+                      href="{% url 'cursoBorrar' c.id %}">
+                      <button type="button" class="btn btn-outline-danger">Borrar</button>
+                    </a>                
+                  </td>
+            </tr>
+    {% endfor %}
+        </tbody>
+    </table>
 {% endblock contenido %}
-
-
-
 
 
     

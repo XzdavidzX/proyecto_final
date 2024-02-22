@@ -1,16 +1,19 @@
-{% extends 'aplicacion/base.html' %} 
-{% load static %} 
-{% block titulo %}Estudiantes{% endblock titulo %} 
-{% block cabecera %}Estudiantes {% endblock cabecera %} 
-{% block contenido %}
+{% extends 'aplicacion/home.html' %}
+
+{% block titulo %}
+    <h1 class="display-5 fw-bolder text-white mb-2" >Eliminar un estudiante</h1>
+{% endblock titulo %}
     
-    <form action="" method="POST">
-        {% csrf_token %}   
-        <div class="text-center">     
-            <h3>¿ Esta seguro de eliminar el estudiante ? <p style="color:red">{{ object }}</p> </h3>
-        </div>
-        <div class="text-center">
-            <input type="submit" class="btn btn-primary btn-block" value="Confirmar">
-        </div>
-    </form>
+
+{% block contenido %}
+<h2>Estudiante</h2>
+<form action="" method="POST">
+    {% csrf_token %}   
+    <div class="text-center">     
+        <h3>¿ Esta seguro de eliminar el estudiante ? <p style="color:red">{{ object }}</p> </h3>
+    </div>
+    <div class="text-center">
+        <input type="submit" class="btn btn-primary btn-block" value="Confirmar">
+    </div>
+</form>
 {% endblock contenido %}

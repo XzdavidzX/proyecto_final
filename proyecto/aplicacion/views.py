@@ -8,7 +8,14 @@ from .forms import *
 from django.views.generic import ListView
 from django.views.generic import CreateView
 from django.views.generic import UpdateView
+from django.views.generic import DetailView
 from django.views.generic import DeleteView
+
+from django.contrib.auth.forms      import AuthenticationForm
+from django.contrib.auth            import authenticate, login, logout
+from django.contrib.auth.mixins     import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views      import LogoutView
 
 # Create your views here.
 def home(request):
@@ -109,19 +116,61 @@ def deleteProfesor(request, id_profesor):
 
 #________________________________________________________ Estudiantes
 
-class EstudianteList(ListView):
+class CustomLogoutView(LogoutView):
+    # Permitir tanto GET como POST
+    http_method_names = ['get', 'post']
+
+
+class EstudianteList(LoginRequiredMixin, ListView):
     model = Estudiante
 
-class EstudianteCreate(CreateView):
+class EstudianteCreate(LoginRequiredMixin, CreateView):
     model = Estudiante
     fields = ['nombre', 'apellido', 'email']
     success_url = reverse_lazy('estudiantes')
 
-class EstudianteUpdate(UpdateView):
+class EstudianteDetail(LoginRequiredMixin, DetailView):
+    model = Estudiante
+
+class EstudianteUpdate(LoginRequiredMixin, UpdateView):
     model = Estudiante
     fields = ['nombre', 'apellido', 'email']
-    success_url = reverse_lazy('estudiantes')
+    success_url = reverse_lazy('estudiantes')    
 
-class EstudianteDelete(DeleteView):
+class EstudianteDelete(LoginRequiredMixin, DeleteView):
     model = Estudiante
-    success_url = reverse_lazy('estudiantes')
+    success_url = reverse_lazy('estudiantes')    
+
+#____________ Login, Logout, Registracion
+# 
+
+def login_request(request):
+    if request.method == "POST":
+        miForm = AuthenticationForm(request, data=request.POST)
+        if miForm.is_valid():
+            usuario = miForm.cleaned_data.get('username')
+            clave = miForm.cleaned_data.get('password')
+            user = authenticate(username=usuario, password=clave)
+            if user is not None:
+                login(request, user)
+                return render(request, "aplicacion/home.html", {"mensaje": f"Bienvenido {usuario}"})
+            else:
+                return render(request, "aplicacion/login.html", {"form":miForm, "mensaje": "Datos Inválidos"})
+        else:    
+            return render(request, "aplicacion/login.html", {"form":miForm, "mensaje": "Datos Inválidos"})
+
+    miForm = AuthenticationForm()
+
+    return render(request, "aplicacion/login.html", {"form":miForm})    
+
+def register(request):
+    if request.method == 'POST':
+        form = RegistroUsuariosForm(request.POST) # UserCreationForm 
+        if form.is_valid():  # Si pasó la validación de Django
+            usuario = form.cleaned_data.get('username')
+            form.save()
+            return render(request, "aplicacion/home.html", {"mensaje":"Usuario Creado"})        
+    else:
+        form = RegistroUsuariosForm() # UserCreationForm 
+
+    return render(request, "aplicacion/registro.html", {"form": form})

@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views import *
 
 urlpatterns = [
-    path('', home, name="home"),
+    path('home', home, name="home"),
     path('cursos/', cursos, name="cursos"),   
     path('curso_form/', cursoForm, name="cursoForm"),
     path('curso_borrar/<id_cursos>/', deleteCurso, name="cursoBorrar"),
@@ -17,6 +17,9 @@ urlpatterns = [
     path('estudiante_update/<int:pk>/', EstudianteUpdate.as_view(), name="estudiante_update"),
     path('estudiante_delete/<int:pk>/', EstudianteDelete.as_view(), name="estudiante_delete"),
 
+    path('login/', login_request, name="login"),
+    path('logout/', CustomLogoutView.as_view(template_name="aplicacion/logout.html"), name="logout"),
+    path('register/', register, name="register"),
 
     path('buscar/', buscar, name="buscar"),
     path('buscarCursos/', buscarCursos, name="buscarCursos"),

@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Business Frontpage - Start Bootstrap Template</title>
+        <title>Examenes Finales</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="{% static "assets/favicon.ico" %}" />
         <!-- Bootstrap icons-->
@@ -16,21 +16,52 @@
     </head>
     <body>
         <!-- Responsive navbar-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">                  
+            
             <div class="container px-5">
-                <a class="nav-link" href="{% url "home" %}"><p class="navbar-brand">Examenes Finales</p></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                    <div class="container-fluid">
+                      <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                          <ul class="navbar-nav">
+                            {% if user.is_authenticated %}
+                            <div class="text-center">
+                                <img src="{{ request.session.avatar }}" height="40px" weight="40px" style="border-radius: 10px;"/>
+                            </div>                    
+                          <li class="nav-item dropdown">
+                            <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                              {{user.username}}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                              <li><a class="dropdown-item" href="{% url "editar_perfil" %}">Editar Perfil</a></li>
+                              <li><a class="dropdown-item" href="{% url "agregar_avatar" %}">Editar Avatar</a></li>
+                              <li><a href="{% url 'eliminar_usuario' %}" class="dropdown-item">Eliminar Cuenta</a></li>
+                              <li><a class="dropdown-item" href="{% url "login" %}">Cambiar de Cuenta</a></li>
+                              {% if user.is_superuser %}
+                              <li><a class="dropdown-item">Usted es staff</a></li>
+                                {% else %}
+                                <li><a class="dropdown-item">Usted no es staff</a></li>
+                              {% endif %}
+                              {% endif %}
+                            </ul>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </nav>
+                <a class="nav-link" href="{% url "home" %}"><p class="btn btn-dark" style="font-size: 19px; margin: 10px">Examenes Finales</p></a>
+                
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         {% if user.is_authenticated  %}
-                        <li class="nav-item"><a class="nav-link" href="cursoBuscar"><button type="button" class="btn btn-outline-success">Buscar Cursos</button></a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url "cursos" %}">Cursos</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url "estudiantes" %}">Estudiantes</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url "profesores" %}">profesores</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url "logout" %}"><form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
+                        <li class="nav-item"><a class="btn btn-dark" href="{% url "buscar" %}">Buscar Cursos</a></li>
+                        <li class="nav-item"><a class="btn btn-dark" aria-current="page" href="{% url "cursos" %}">Cursos</a></li>
+                        <li class="nav-item"><a class="btn btn-dark" href="{% url "estudiantes" %}">Estudiantes</a></li>
+                        <li class="nav-item"><a class="btn btn-dark" href="{% url "profesores" %}">profesores</a></li>
+                        <li class="nav-item"><form method="post" action="{% url 'logout' %}">
                             <button type="submit" class="btn btn-dark">Logout</button>
-                        </form></a></li>
+                            {% csrf_token %}
+                        </form>
+                        </li>
                         {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url "login" %}">login</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url "register" %}">registro</a></li>
@@ -64,19 +95,25 @@
         </header>
         <!-- Features section-->
         {% block contenido %}
-        
+
+
         {% endblock contenido %}
         <!-- Footer-->
-        {% if user.is_authenticated %}
+        {% block footer %}
 
+        {% if user.is_authenticated %}
         <footer class="py-5 bg-dark">
             <div class="container px-5"><p class="m-0 text-center text-white">bienvenido {{user.username}}</p></div>
         </footer>
+
         {% else %}
         <footer class="py-5 bg-dark">
             <div class="container px-5"><p class="m-0 text-center text-white">registrese para ver todas las funciones</p></div>
         </footer>
+
         {% endif %}
+
+        {% endblock footer %}
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->

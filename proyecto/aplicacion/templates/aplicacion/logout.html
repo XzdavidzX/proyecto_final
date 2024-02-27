@@ -1,12 +1,10 @@
 {% extends 'aplicacion/home.html' %} 
 {% load static %} 
-{% block titulo %}<h1 class="display-5 fw-bolder text-white mb-2">Logout</h1>{% endblock titulo %} 
-{% block contenido %}
-    <br>
+{% block titulo %}<h1 class="display-5 fw-bolder text-white mb-2">sesion cerrada</h1>{% endblock titulo %} 
+{% block footer %}
 
-    <h4>
-        <p style="color:red" align="center">
-            Ud se ha deslogueado
-        </p>
-    </h4>
-{% endblock contenido %}
+<footer class="py-5 bg-dark">
+    <div class="container px-5"><p class="m-0 text-center text-white">registrese para ver todas las funciones</p></div>
+</footer>
+
+{% endblock footer %}

@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.urls import reverse_lazy
+from django.http      import HttpResponse
+from django.urls      import reverse_lazy
 
 from .models import *
-from .forms import *
+from .forms  import *
 
 from django.views.generic import ListView
 from django.views.generic import CreateView
@@ -16,6 +16,9 @@ from django.contrib.auth            import authenticate, login, logout
 from django.contrib.auth.mixins     import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views      import LogoutView
+from django.shortcuts               import render, redirect
+from .forms                         import AvatarFormulario
+from .models                        import Avatar
 
 # Create your views here.
 def home(request):
@@ -30,9 +33,7 @@ def cursos(request):
 def estudiantes(request):
     return render(request, "aplicacion/estudiantes.html")
 
-def entregables(request):
-    return render(request, "aplicacion/entregables.html")
-
+@login_required
 def cursoForm(request):
     if request.method == "POST":
         miForm = CursoForm(request.POST)
@@ -49,10 +50,11 @@ def cursoForm(request):
     return render(request, "aplicacion/cursoForm.html", {"form": miForm })
 
   
-
+@login_required
 def buscar(request):
-    return render(request, "aplicacion/buscar.html")
+    return render(request, "aplicacion/buscar.html")  
 
+@login_required
 def buscarCursos(request):
     if request.GET["buscar"]:
         patron = request.GET["buscar"]
@@ -61,15 +63,18 @@ def buscarCursos(request):
         return render(request, "aplicacion/cursos.html", contexto)
     return HttpResponse("No se ingresaron patrones de busqueda")
 
+@login_required
 def deleteCurso(request, id_cursos):
     curso = Curso.objects.get(id=id_cursos)
     curso.delete()
     return redirect(reverse_lazy('cursos'))
 #________________________________________________________ Profesores
+@login_required
 def profesores(request):
     contexto = {'profesores': Profesor.objects.all()}
     return render(request, "aplicacion/profesores.html", contexto)
 
+@login_required
 def createProfesor(request):
     if request.method == "POST":
         miForm = ProfesorForm(request.POST)
@@ -88,6 +93,7 @@ def createProfesor(request):
 
     return render(request, "aplicacion/profesorForm.html", {"form": miForm })  
 
+@login_required
 def updateProfesor(request, id_profesor):
     profesor = Profesor.objects.get(id=id_profesor)
     if request.method == "POST":
@@ -108,6 +114,7 @@ def updateProfesor(request, id_profesor):
         })
     return render(request, "aplicacion/profesorForm.html", {'form': miForm})
 
+@login_required
 def deleteProfesor(request, id_profesor):
     profesor = Profesor.objects.get(id=id_profesor)
     profesor.delete()
@@ -119,6 +126,7 @@ def deleteProfesor(request, id_profesor):
 class CustomLogoutView(LogoutView):
     # Permitir tanto GET como POST
     http_method_names = ['get', 'post']
+    next_page = '/aplicacion/logout/'  # Página a la que se redirigirá después de cerrar sesión
 
 
 class EstudianteList(LoginRequiredMixin, ListView):
@@ -141,7 +149,7 @@ class EstudianteDelete(LoginRequiredMixin, DeleteView):
     model = Estudiante
     success_url = reverse_lazy('estudiantes')    
 
-#____________ Login, Logout, Registracion
+#____________ Login, Logout, Registracion, delete
 # 
 
 def login_request(request):
@@ -152,8 +160,14 @@ def login_request(request):
             clave = miForm.cleaned_data.get('password')
             user = authenticate(username=usuario, password=clave)
             if user is not None:
-                login(request, user)
-                return render(request, "aplicacion/home.html", {"mensaje": f"Bienvenido {usuario}"})
+                login(request, user)               
+                try:
+                    avatar = Avatar.objects.get(user=request.user.id).imagen.url
+                except:
+                    avatar = '/media/avatares/default.png'
+                finally:
+                    request.session['avatar'] = avatar
+                    return render(request, "aplicacion/home.html")
             else:
                 return render(request, "aplicacion/login.html", {"form":miForm, "mensaje": "Datos Inválidos"})
         else:    
@@ -174,3 +188,69 @@ def register(request):
         form = RegistroUsuariosForm() # UserCreationForm 
 
     return render(request, "aplicacion/registro.html", {"form": form})
+
+def eliminarUsuario(request):
+    return render(request, "aplicacion/eliminar_usuario.html")
+
+
+@login_required
+def delete_user(request):
+    user = request.user
+    try:
+        user.delete()
+    except User.DoesNotExist:
+        print("El usuario no existe.")
+
+    # Redirigir al usuario a la página principal después de eliminar su cuenta y cerrar sesión
+    return redirect('home')
+
+
+
+
+
+#_____________________________________________________editar perfil,avatar
+@login_required
+def editarPerfil(request):
+    usuario = request.user
+    if request.method == "POST":
+        form = UserEditForm(request.POST)
+        if form.is_valid():
+            usuario.email = form.cleaned_data.get('email')
+            usuario.password1 = form.cleaned_data.get('password1')
+            usuario.password2 = form.cleaned_data.get('password2')
+            usuario.first_name = form.cleaned_data.get('first_name')
+            usuario.last_name = form.cleaned_data.get('last_name')
+            usuario.save()
+            return render(request, "aplicacion/home.html", {'mensaje': f"Usuario {usuario.username} actualizado correctamente"})
+        else:
+            return render(request, "aplicacion/editarPerfil.html", {'form': form})
+    else:
+        form = UserEditForm(instance=usuario)
+    return render(request, "aplicacion/editarPerfil.html", {'form': form, 'usuario':usuario.username})
+
+
+
+@login_required
+def agregarAvatar(request):
+    if request.method == "POST":
+        form = AvatarFormulario(request.POST, request.FILES)
+        if form.is_valid():
+            usuario = request.user
+            avatar_nuevo = form.cleaned_data['imagen']
+
+            # Borrar el avatar anterior si existe
+            Avatar.objects.filter(user=usuario).delete()
+
+            # Grabar el nuevo avatar
+            avatar = Avatar(user=usuario, imagen=avatar_nuevo)
+            avatar.save()
+
+            # Almacenar la URL del nuevo avatar en la sesión
+            request.session["avatar"] = avatar.imagen.url
+
+            return redirect("/aplicacion/")  # Redireccionar a la página principal
+    else:
+        form = AvatarFormulario()
+    return render(request, "aplicacion/agregarAvatar.html", {'form': form})
+
+

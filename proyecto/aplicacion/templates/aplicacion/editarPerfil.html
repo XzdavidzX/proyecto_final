@@ -1,0 +1,21 @@
+{% extends 'aplicacion/home.html' %} 
+{% load static %} 
+{% block titulo %}<h1 class="display-5 fw-bolder text-white mb-2">Examenes Finales</h1>{% endblock titulo %} 
+{% block contenido %}
+    <br>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <table>
+        {{ form.as_table }}
+        </table>
+        <button type="submit">Actualizar Usuario</button>
+    </form>
+{% endblock contenido %}
+
+{% block footer %}
+
+<footer class="py-5 bg-dark">
+    <div class="container px-5"><p class="m-0 text-center text-white">modificar usuario {{user.username}}</p></div>
+</footer>
+
+{% endblock footer %}

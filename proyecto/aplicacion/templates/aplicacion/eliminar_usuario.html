@@ -1,0 +1,17 @@
+{% extends 'aplicacion/home.html' %}
+
+{% block titulo %}
+    <h1 class="display-5 fw-bolder text-white mb-2" >¿Estas seguro de eliminar el usuario?</h1>
+{% endblock titulo %}
+    
+
+{% block contenido %}
+<form action="" method="POST">
+    {% csrf_token %}   
+    <div class="text-center">
+       <a href="{% url "confirmar_eliminar" %}" class="btn btn-danger">
+        confirmar
+    </a>
+    </div>
+</form>
+{% endblock contenido %}

@@ -253,4 +253,7 @@ def agregarAvatar(request):
         form = AvatarFormulario()
     return render(request, "aplicacion/agregarAvatar.html", {'form': form})
 
+def acerca_de_mi(request):
+    return render(request, "aplicacion/acerca_de_mi.html")
+
 

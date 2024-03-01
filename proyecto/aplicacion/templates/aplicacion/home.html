@@ -98,22 +98,29 @@
 
 
         {% endblock contenido %}
-        <!-- Footer-->
-        {% block footer %}
+        <footer class="bg-dark py-4 mt-auto">
+            <div class="container px-5">
+                <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                    <div class="col-auto"><div class="small m-0 text-white">
 
-        {% if user.is_authenticated %}
-        <footer class="py-5 bg-dark">
-            <div class="container px-5"><p class="m-0 text-center text-white">bienvenido {{user.username}}</p></div>
+
+                        <!-- Footer-->
+                        {% block footer %}
+                
+                        {% if user.is_authenticated %}
+                            <div class="container px-5"><p class="m-0 text-center text-white">bienvenido {{user.username}}</p></div>
+                        {% else %}
+                            <div class="container px-5"><p class="m-0 text-center text-white">registrese para ver todas las funciones</p></div>
+                
+                        {% endif %}
+                
+                        {% endblock footer %}</div></div>
+                    <div class="col-auto">
+                        <a class="link-light small" href="{% url "acerca_de_mi" %}">Acerca de mi</a>
+                    </div>
+                </div>
+            </div>
         </footer>
-
-        {% else %}
-        <footer class="py-5 bg-dark">
-            <div class="container px-5"><p class="m-0 text-center text-white">registrese para ver todas las funciones</p></div>
-        </footer>
-
-        {% endif %}
-
-        {% endblock footer %}
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
